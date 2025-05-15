@@ -148,14 +148,14 @@ const CreatePlanPage: React.FC = () => {
                     <label htmlFor={`topic-${index}`} className="block text-sm font-medium text-gray-700 mb-1">
                       Topic {topicLevelPairs.length > 1 ? index + 1 : ''}
                     </label>
-                    <input
+                    <input 
                       id={`topic-${index}`}
                       type="text"
                       value={pair.topic}
                       onChange={(e) => handleTopicChange(index, e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       placeholder="E.g., JavaScript, Python"
-                      required
+                      required 
                     />
                   </div>
                   

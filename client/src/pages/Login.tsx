@@ -14,13 +14,16 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
+    // if (!email || !password) {
+    //   setError('Please fill in all fields');
+    //   return;
+    // }
     
     setIsLoading(true);
-    setError('');
+    // setError('');
+        navigate('/dashboard');
+        alert("password is wrong still going to dashboard")
+return;
     
     try {
       const success = await login(email, password);
@@ -28,7 +31,8 @@ const Login: React.FC = () => {
       if (success) {
         navigate('/dashboard');
       } else {
-        setError('Invalid email or password');
+        navigate('/dashboard');
+        // setError('Invalid email or password');
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -71,7 +75,7 @@ const Login: React.FC = () => {
                 name="email"
                 type="email"
                 autoComplete="email"
-                required
+                // required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
@@ -87,7 +91,7 @@ const Login: React.FC = () => {
                 name="password"
                 type="password"
                 autoComplete="current-password"
-                required
+                // required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
@@ -123,6 +127,8 @@ const Login: React.FC = () => {
         {/* Demo credentials */}
         <div className="mt-6 bg-blue-50 px-4 py-3 rounded-md border border-blue-100">
           <h3 className="text-sm font-medium text-blue-800">Demo Credentials</h3>
+          <p className="text-xs text-blue-600 mt-1">type anything or leave it click on submit you will go to dashboard</p>
+
           <p className="text-xs text-blue-600 mt-1">Email: john@example.com</p>
           <p className="text-xs text-blue-600">Password: password123</p>
         </div>
