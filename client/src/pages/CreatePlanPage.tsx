@@ -2,14 +2,21 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   BookOpen, Clock, Calendar, Wallet, CheckCircle, Brain,
-  BarChart3, ArrowLeft, ArrowRight 
+  BarChart3, ArrowLeft, ArrowRight, Plus, X
 } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 
+// Define a type for our topic-level pair
+interface TopicLevelPair {
+  topic: string;
+  level: 'Beginner' | 'Intermediate' | 'Advanced';
+}
+
 const CreatePlanPage: React.FC = () => {
   const [step, setStep] = useState(1);
-  const [topic, setTopic] = useState('');
-  const [level, setLevel] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Beginner');
+  const [topicLevelPairs, setTopicLevelPairs] = useState<TopicLevelPair[]>([
+    { topic: '', level: 'Beginner' }
+  ]);
   const [timePerDay, setTimePerDay] = useState(60);
   const [duration, setDuration] = useState(30);
   const [lockedAmount, setLockedAmount] = useState(1000);
@@ -19,8 +26,9 @@ const CreatePlanPage: React.FC = () => {
   const navigate = useNavigate();
   
   const handleNext = () => {
-    if (step === 1 && !topic) {
-      return; // Don't proceed if topic is empty
+    // Don't proceed if any topic is empty
+    if (step === 1 && topicLevelPairs.some(pair => !pair.topic)) {
+      return;
     }
     setStep(step + 1);
   };
@@ -34,10 +42,45 @@ const CreatePlanPage: React.FC = () => {
     
     // Simulate AI plan generation with a delay
     setTimeout(() => {
-      createPlan(topic, level, timePerDay, duration, lockedAmount);
+      // Pass the first topic for backward compatibility 
+      // (you'll need to update your context to handle multiple topics)
+      createPlan(
+        topicLevelPairs[0].topic, 
+        topicLevelPairs[0].level, 
+        timePerDay, 
+        duration, 
+        lockedAmount
+      );
       setIsGenerating(false);
       navigate('/dashboard');
     }, 2000);
+  };
+
+  // Handle topic change
+  const handleTopicChange = (index: number, value: string) => {
+    const updatedPairs = [...topicLevelPairs];
+    updatedPairs[index].topic = value;
+    setTopicLevelPairs(updatedPairs);
+  };
+
+  // Handle level change
+  const handleLevelChange = (index: number, level: 'Beginner' | 'Intermediate' | 'Advanced') => {
+    const updatedPairs = [...topicLevelPairs];
+    updatedPairs[index].level = level;
+    setTopicLevelPairs(updatedPairs);
+  };
+
+  // Add new topic-level pair
+  const addTopicLevelPair = () => {
+    setTopicLevelPairs([...topicLevelPairs, { topic: '', level: 'Beginner' }]);
+  };
+
+  // Remove topic-level pair
+  const removeTopicLevelPair = (index: number) => {
+    if (topicLevelPairs.length > 1) {
+      const updatedPairs = topicLevelPairs.filter((_, i) => i !== index);
+      setTopicLevelPairs(updatedPairs);
+    }
   };
   
   return (
@@ -90,42 +133,63 @@ const CreatePlanPage: React.FC = () => {
                 <h2 className="text-xl font-semibold text-gray-800">What do you want to learn?</h2>
               </div>
               
-              <div>
-                <label htmlFor="topic" className="block text-sm font-medium text-gray-700 mb-1">
-                  Topic
-                </label>
-                <input
-                  id="topic"
-                  type="text"
-                  value={topic}
-                  onChange={(e) => setTopic(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="E.g., JavaScript, Machine Learning, Data Science"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Level
-                </label>
-                <div className="grid grid-cols-3 gap-3">
-                  {(['Beginner', 'Intermediate', 'Advanced'] as const).map((l) => (
-                    <button
-                      key={l}
-                      type="button"
-                      onClick={() => setLevel(l)}
-                      className={`py-2 px-4 rounded-md text-sm font-medium ${
-                        level === l
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      } transition-colors duration-200`}
+              {topicLevelPairs.map((pair, index) => (
+                <div key={index} className="space-y-4 border border-gray-200 rounded-md p-4 relative">
+                  {topicLevelPairs.length > 1 && (
+                    <button 
+                      onClick={() => removeTopicLevelPair(index)}
+                      className="absolute top-2 right-2 p-1 rounded-full bg-gray-100 hover:bg-gray-200"
                     >
-                      {l}
+                      <X className="h-4 w-4 text-gray-600" />
                     </button>
-                  ))}
+                  )}
+                  
+                  <div>
+                    <label htmlFor={`topic-${index}`} className="block text-sm font-medium text-gray-700 mb-1">
+                      Topic {topicLevelPairs.length > 1 ? index + 1 : ''}
+                    </label>
+                    <input
+                      id={`topic-${index}`}
+                      type="text"
+                      value={pair.topic}
+                      onChange={(e) => handleTopicChange(index, e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="E.g., JavaScript, Python"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Level
+                    </label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {(['Beginner', 'Intermediate', 'Advanced'] as const).map((l) => (
+                        <button
+                          key={l}
+                          type="button"
+                          onClick={() => handleLevelChange(index, l)}
+                          className={`py-2 px-4 rounded-md text-sm font-medium ${
+                            pair.level === l
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          } transition-colors duration-200`}
+                        >
+                          {l}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
+              
+              <button
+                onClick={addTopicLevelPair}
+                className="flex items-center justify-center w-full py-2 border border-dashed border-gray-300 rounded-md text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors duration-200"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add another topic
+              </button>
             </div>
           )}
           
@@ -259,20 +323,19 @@ const CreatePlanPage: React.FC = () => {
               </div>
               
               <div className="space-y-4">
-                <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                  <div className="flex items-center">
+                {/* Topics section */}
+                <div className="space-y-2">
+                  <div className="flex items-center py-2 border-b border-gray-100">
                     <BookOpen className="h-4 w-4 text-gray-500 mr-2" />
-                    <span className="text-gray-600">Topic</span>
+                    <span className="text-gray-600">Topics</span>
                   </div>
-                  <span className="font-medium text-gray-800">{topic}</span>
-                </div>
-                
-                <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                  <div className="flex items-center">
-                    <Brain className="h-4 w-4 text-gray-500 mr-2" />
-                    <span className="text-gray-600">Level</span>
-                  </div>
-                  <span className="font-medium text-gray-800">{level}</span>
+                  
+                  {topicLevelPairs.map((pair, index) => (
+                    <div key={index} className="ml-6 flex items-center justify-between py-1">
+                      <span className="text-gray-600">{pair.topic}</span>
+                      <span className="font-medium text-gray-800">{pair.level}</span>
+                    </div>
+                  ))}
                 </div>
                 
                 <div className="flex items-center justify-between py-2 border-b border-gray-100">
@@ -317,7 +380,7 @@ const CreatePlanPage: React.FC = () => {
                 type="button"
                 onClick={handleNext}
                 className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none transition-colors duration-200"
-                disabled={step === 1 && !topic}
+                disabled={step === 1 && topicLevelPairs.some(pair => !pair.topic)}
               >
                 Next Step
                 <ArrowRight className="ml-2 h-5 w-5" />
