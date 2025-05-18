@@ -8,7 +8,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import PlanPage from './pages/PlanPage';
-import TasksPage from './pages/TasksPage';
+// import TasksPage from './pages/TasksPage';
 import NotesPage from './pages/NotesPage';
 import TestsPage from './pages/TestsPage';
 import WalletPage from './pages/WalletPage';
@@ -60,11 +60,11 @@ function App() {
                 </ProtectedRoute>
               } />
               
-              <Route path="/tasks" element={
+              {/* <Route path="/tasks" element={
                 <ProtectedRoute>
                   <TasksPage />
                 </ProtectedRoute>
-              } />
+              } /> */}
               
               <Route path="/notes" element={
                 <ProtectedRoute>

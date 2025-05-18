@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ClipboardList, CheckCircle, UserCheck, Calendar, ArrowRight } from 'lucide-react';
+import { ClipboardList, CheckCircle, UserCheck, Calendar, ArrowRight, Clock, Brain } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import ProgressCircle from '../components/ProgressCircle';
 import TaskCard from '../components/TaskCard';
 import AttendanceCamera from '../components/AttendanceCamera';
+
+// Import the plan data (assuming it's accessible here)
+// If not, you should import it from your actual data source
+import { plan } from "../utils/planmockdata.ts";
 
 const Dashboard: React.FC = () => {
   const { currentPlan, getCurrentDay, markTaskComplete, markAttendance, getAttendancePercentage } = usePlan();
@@ -15,12 +19,9 @@ const Dashboard: React.FC = () => {
     setCurrentDayPlan(getCurrentDay());
   }, [currentPlan, getCurrentDay]);
   
-  const handleTaskComplete = (taskId: string) => {
-    if (currentDayPlan) {
-      markTaskComplete(currentDayPlan.day - 1, taskId);
-      // Update current day plan
-      setCurrentDayPlan(getCurrentDay());
-    }
+  const handleTaskComplete = (taskIndex: number) => {
+    // This would need to be updated to work with your actual implementation
+    console.log("Task completed:", taskIndex);
   };
   
   const handleAttendanceMarked = () => {
@@ -32,7 +33,7 @@ const Dashboard: React.FC = () => {
     }
   };
   
-  // Calculate completed tasks percentage
+  // Calculate completed tasks percentage - using the original function for compatibility
   const getCompletedTasksPercentage = () => {
     if (!currentPlan) return 0;
     
@@ -44,7 +45,10 @@ const Dashboard: React.FC = () => {
     return totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
   };
   
-  if (!currentPlan) {
+  // Get day 1 from the plan data
+  const day1 = plan.length > 0 ? plan[0] : null;
+  
+  if (!currentPlan && !day1) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
@@ -102,43 +106,36 @@ const Dashboard: React.FC = () => {
           
           {/* Day Info */}
           <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center">
-                <Calendar className="h-5 w-5 text-blue-600 mr-2" />
-                <h3 className="font-semibold text-gray-800">Current Day</h3>
-              </div>
-              <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">
-                Day {currentDayPlan?.day || 0}
-              </span>
-            </div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-600 text-sm">Topic:</span>
-              <span className="font-medium text-gray-800">{currentPlan.topic}</span>
-            </div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-600 text-sm">Level:</span>
-              <span className="font-medium text-gray-800">{currentPlan.level}</span>
-            </div>
             <div className="flex items-center justify-between mb-4">
-              <span className="text-gray-600 text-sm">Time Per Day:</span>
-              <span className="font-medium text-gray-800">{currentPlan.timePerDay} min</span>
-            </div>
-            
-            {/* Attendance Button */}
-            {currentDayPlan && !currentDayPlan.attendanceMarked ? (
+              <h2 className="font-semibold text-gray-800 flex items-center">
+                <Calendar className="h-4 w-4 text-blue-600 mr-2" />
+                Day {day1 ? day1.day : 1}
+              </h2>
               <button
                 onClick={() => setShowAttendanceCamera(true)}
-                className="w-full flex items-center justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none transition-colors duration-200"
+                className="inline-flex items-center px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full hover:bg-green-200 transition-colors duration-200"
               >
-                <UserCheck className="mr-2 h-5 w-5" />
+                <UserCheck className="h-4 w-4 mr-1" />
                 Mark Attendance
               </button>
-            ) : (
-              <div className="flex items-center text-green-600 text-sm">
-                <CheckCircle className="h-4 w-4 mr-1" />
-                Attendance already marked
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Total Tasks:</span>
+                <span className="font-medium text-gray-800">{day1 ? day1.tasks.length : 0}</span>
               </div>
-            )}
+              
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Total Duration:</span>
+                <span className="font-medium text-gray-800">
+                  {day1 ? day1.tasks.reduce((total, task) => {
+                    const duration = parseInt(task.duration);
+                    return isNaN(duration) ? total : total + duration;
+                  }, 0) : 0} min
+                </span>
+              </div>
+            </div>
           </div>
         </div>
         
@@ -148,21 +145,65 @@ const Dashboard: React.FC = () => {
           </div>
         )}
         
-        {/* Today's Tasks */}
+        {/* Today's Tasks - Using Day 1 data */}
         <div className="mb-6">
           <div className="flex items-center mb-4">
             <ClipboardList className="h-5 w-5 text-blue-600 mr-2" />
             <h2 className="text-xl font-semibold text-gray-800">Today's Tasks</h2>
           </div>
           
-          {currentDayPlan && currentDayPlan.tasks.length > 0 ? (
+          {day1 && day1.tasks.length > 0 ? (
             <div className="space-y-4">
-              {currentDayPlan.tasks.map((task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  onComplete={() => handleTaskComplete(task.id)}
-                />
+              {day1.tasks.map((task, index) => (
+                <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center mb-2">
+                        <span className={`px-2 py-0.5 text-xs rounded-full mr-2 ${
+                          task.type === 'lesson' ? 'bg-blue-100 text-blue-800' :
+                          task.type === 'mcq' ? 'bg-purple-100 text-purple-800' :
+                          task.type === 'technical-interview' ? 'bg-amber-100 text-amber-800' :
+                          task.type === 'behavioral-interview' ? 'bg-pink-100 text-pink-800' :
+                          task.type === 'system-design' ? 'bg-indigo-100 text-indigo-800' :
+                          task.type === 'whiteboard-interview' ? 'bg-red-100 text-red-800' :
+                          task.type === 'case-study' ? 'bg-green-100 text-green-800' :
+                          task.type === 'mock-interview' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-gray-100 text-gray-800'
+                        }`}>
+                          {task.type.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                        </span>
+                        <h3 className="font-medium text-gray-800">{task.subtopic}</h3>
+                      </div>
+                      
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {task.duration}
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={() => handleTaskComplete(index)}
+                      className="inline-flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full hover:bg-blue-100 hover:text-blue-600 transition-colors duration-200"
+                    >
+                      <CheckCircle className="h-5 w-5" />
+                    </button>
+                  </div>
+                  
+                  <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
+                    <div className="flex items-center text-sm text-gray-600">
+                      <Brain className="h-4 w-4 mr-1 text-gray-400" />
+                      <span>{task.type === 'lesson' ? 'Study Material' : 'Practice Task'}</span>
+                    </div>
+                    
+                    <Link
+                      to={`/task/${index}`}
+                      className="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-600 text-sm rounded-md hover:bg-blue-100 transition-colors duration-200"
+                    >
+                      Start Task
+                      <ArrowRight className="ml-1 h-3 w-3" />
+                    </Link>
+                  </div>
+                </div>
               ))}
             </div>
           ) : (
@@ -172,19 +213,14 @@ const Dashboard: React.FC = () => {
           )}
         </div>
         
-        <div className="flex justify-between">
-          <Link
-            to="/plan"
-            className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors duration-200"
-          >
-            View Full Plan
-          </Link>
+        <div className="flex  justify-end">
+         
           
           <Link
-            to="/tasks"
+            to="/plan"
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
           >
-            All Tasks
+            View Plan
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </div>

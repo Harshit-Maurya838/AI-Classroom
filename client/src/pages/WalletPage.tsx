@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { usePlan } from '../context/PlanContext';
+import { createplan } from '../utils/createplanmockdata';
 import { Wallet as WalletIcon, AlertCircle, BadgeCheck, XCircle, ArrowRight, ArrowUpRight } from 'lucide-react';
 import ProgressCircle from '../components/ProgressCircle';
 
@@ -130,7 +131,7 @@ const WalletPage: React.FC = () => {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-sm font-medium text-gray-500 uppercase mb-2">Locked Amount</h2>
             <div className="flex items-baseline">
-              <span className="text-3xl font-bold text-gray-800">₹{currentPlan.lockedAmount}</span>
+              <span className="text-3xl font-bold text-gray-800">₹{createplan.lockedmoney}</span>
             </div>
             <p className="mt-2 text-sm text-gray-600">
               Amount you've locked for this learning plan

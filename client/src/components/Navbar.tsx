@@ -14,9 +14,9 @@ const Navbar: React.FC = () => {
   const navItems = [
     { path: '/dashboard', name: 'Dashboard', icon: <LayoutDashboard size={20} /> },
     { path: '/plan', name: 'Plan', icon: <BookOpen size={20} /> },
-    { path: '/tasks', name: 'Tasks', icon: <ClipboardCheck size={20} /> },
+    // { path: '/tasks', name: 'Tasks', icon: <ClipboardCheck size={20} /> },
     { path: '/notes', name: 'Notes', icon: <GraduationCap size={20} /> },
-    { path: '/tests', name: 'Tests', icon: <BarChart2 size={20} /> },
+    // { path: '/tests', name: 'Tests', icon: <BarChart2 size={20} /> },
     { path: '/wallet', name: 'Wallet', icon: <Wallet size={20} /> },
     { path: '/profile', name: 'Profile', icon: <User size={20} /> },
   ];
@@ -48,13 +48,13 @@ const Navbar: React.FC = () => {
                   <span className="ml-2">{item.name}</span>
                 </Link>
               ))}
-              <button
+              {/* <button
                 onClick={logout}
                 className="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
               >
                 <LogOut size={20} />
                 <span className="ml-2">Logout</span>
-              </button>
+              </button> */}
             </div>
           </div>
           

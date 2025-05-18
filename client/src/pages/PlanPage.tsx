@@ -1,5 +1,6 @@
 import React from 'react';
 import {plan} from "../utils/planmockdata.ts";
+import { createplan } from '../utils/createplanmockdata.ts';
 import { Link } from 'react-router-dom';
 import { Calendar, CheckCircle, Clock, ArrowRight, Brain, BookOpen } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
@@ -7,7 +8,6 @@ import ProgressCircle from '../components/ProgressCircle';
 
 const PlanPage: React.FC = () => {
   const { currentPlan, getAttendancePercentage } = usePlan();
-  
   if (!currentPlan) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -33,7 +33,6 @@ const PlanPage: React.FC = () => {
   // Calculate progress percentages
   const getDaysCompletedPercentage = () => {
     const completedDays = currentPlan.days.filter(day => day.completed).length;
-    console.log(plan)
     return Math.round((completedDays / currentPlan.days.length) * 100);
   };
   
@@ -56,23 +55,20 @@ const PlanPage: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Topic:</span>
-                  <span className="font-medium text-gray-800">{currentPlan.topic}</span>
+                  <span className="font-medium text-gray-800">{createplan.topic}</span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Level:</span>
-                  <span className="font-medium text-gray-800">{currentPlan.level}</span>
-                </div>
+               
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Duration:</span>
-                  <span className="font-medium text-gray-800">{currentPlan.duration} days</span>
+                  <span className="font-medium text-gray-800">{createplan.duration} days</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Daily Time:</span>
-                  <span className="font-medium text-gray-800">{currentPlan.timePerDay} minutes</span>
+                  <span className="font-medium text-gray-800">{createplan.dailytime} minutes</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Locked Amount:</span>
-                  <span className="font-medium text-gray-800">₹{currentPlan.lockedAmount}</span>
+                  <span className="font-medium text-gray-800">₹{createplan.lockedmoney}</span>
                 </div>
                
               </div>
