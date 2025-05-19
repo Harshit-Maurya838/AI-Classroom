@@ -21,6 +21,7 @@ const CreatePlanPage: React.FC = () => {
   const [duration, setDuration] = useState(30);
   const [lockedAmount, setLockedAmount] = useState(1000);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const { createPlan } = usePlan();
   const navigate = useNavigate();
@@ -37,13 +38,38 @@ const CreatePlanPage: React.FC = () => {
     setStep(step - 1);
   };
   
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsGenerating(true);
+    setError(null);
     
-    // Simulate AI plan generation with a delay
-    setTimeout(() => {
-      // Pass the first topic for backward compatibility 
-      // (you'll need to update your context to handle multiple topics)
+    // Prepare the data to be sent
+    const planData = {
+      topics: topicLevelPairs.map(pair => ({
+        topic: pair.topic,
+        level: pair.level
+      })),
+      timePerDay,
+      duration,
+      lockedAmount
+    };
+    
+    try {
+      // Make the API call
+      const response = await fetch('endpoint/createplan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(planData)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      
+      // Update context with the result from the API
       createPlan(
         topicLevelPairs[0].topic, 
         topicLevelPairs[0].level, 
@@ -51,9 +77,14 @@ const CreatePlanPage: React.FC = () => {
         duration, 
         lockedAmount
       );
+      
       setIsGenerating(false);
       navigate('/dashboard');
-    }, 2000);
+    } catch (err) {
+      setIsGenerating(false);
+      setError(err instanceof Error ? err.message : 'Failed to create plan. Please try again.');
+      console.error('Error creating plan:', err);
+    }
   };
 
   // Handle topic change
@@ -125,6 +156,13 @@ const CreatePlanPage: React.FC = () => {
         </div>
         
         <div className="bg-white rounded-lg shadow-sm p-6">
+          {/* Display error message if there is one */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md">
+              {error}
+            </div>
+          )}
+          
           {/* Step 1: Topic */}
           {step === 1 && (
             <div className="space-y-6">
