@@ -3,56 +3,48 @@ import { useAuth } from '../context/AuthContext';
 import { usePlan } from '../context/PlanContext';
 import { User, Book, FileText, Award, Clock, CheckCircle, Settings, LogOut } from 'lucide-react';
 
-const ProfilePage: React.FC = () => {
+const ProfilePage = () => {
   const { currentUser, logout } = useAuth();
   const { currentPlan, getAttendancePercentage } = usePlan();
-  const [activeTab, setActiveTab] = useState<'profile' | 'settings'>('profile');
-  
+  const [activeTab, setActiveTab] = useState('profile');
+
   if (!currentUser) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center py-12">
             <h1 className="text-3xl font-bold text-gray-800 mb-4">Not Logged In</h1>
-            <p className="text-gray-600">
-              Please log in to view your profile.
-            </p>
+            <p className="text-gray-600">Please log in to view your profile.</p>
           </div>
         </div>
       </div>
     );
   }
-  
+
   const getCompletedTasksCount = () => {
     if (!currentPlan) return 0;
-    
     return currentPlan.days.reduce((acc, day) => {
       return acc + day.tasks.filter(task => task.completed).length;
     }, 0);
   };
-  
+
   const getTotalTasksCount = () => {
     if (!currentPlan) return 0;
-    
     return currentPlan.days.reduce((acc, day) => {
       return acc + day.tasks.length;
     }, 0);
   };
-  
+
   const getCompletedDaysCount = () => {
     if (!currentPlan) return 0;
-    
     return currentPlan.days.filter(day => day.completed).length;
   };
-  
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">
-            Profile
-          </h1>
-          
+          <h1 className="text-2xl font-bold text-gray-800">Profile</h1>
           <div className="flex space-x-2">
             <button
               onClick={() => setActiveTab('profile')}
@@ -76,20 +68,17 @@ const ProfilePage: React.FC = () => {
             </button>
           </div>
         </div>
-        
+
         {activeTab === 'profile' ? (
           <div className="space-y-6">
-            {/* Profile Header */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <div className="flex flex-col md:flex-row items-center">
                 <div className="bg-blue-100 rounded-full p-4 mb-4 md:mb-0 md:mr-6">
                   <User className="h-16 w-16 text-blue-600" />
                 </div>
-                
                 <div className="text-center md:text-left">
                   <h2 className="text-2xl font-bold text-gray-800">{currentUser.username}</h2>
                   <p className="text-gray-600">{currentUser.email}</p>
-                  
                   {currentPlan && (
                     <div className="mt-3 inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
                       <Book className="h-4 w-4 mr-1" />
@@ -97,7 +86,6 @@ const ProfilePage: React.FC = () => {
                     </div>
                   )}
                 </div>
-                
                 <div className="mt-4 md:mt-0 md:ml-auto">
                   <button
                     onClick={logout}
@@ -109,8 +97,7 @@ const ProfilePage: React.FC = () => {
                 </div>
               </div>
             </div>
-            
-            {/* Stats */}
+
             {currentPlan && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Completed Tasks */}
@@ -130,7 +117,7 @@ const ProfilePage: React.FC = () => {
                     ></div>
                   </div>
                 </div>
-                
+
                 {/* Attendance */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
                   <div className="flex items-center mb-2">
@@ -147,7 +134,7 @@ const ProfilePage: React.FC = () => {
                     ></div>
                   </div>
                 </div>
-                
+
                 {/* Days Completed */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
                   <div className="flex items-center mb-2">
@@ -167,14 +154,13 @@ const ProfilePage: React.FC = () => {
                 </div>
               </div>
             )}
-            
-            {/* Learning History */}
+
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
                 <FileText className="h-5 w-5 text-blue-600 mr-2" />
                 Learning History
               </h2>
-              
+
               {currentPlan ? (
                 <div className="space-y-4">
                   <div className="flex items-start border-l-2 border-blue-500 pl-4 pb-6">
@@ -200,7 +186,7 @@ const ProfilePage: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <p className="text-center text-gray-600 italic text-sm">
                     Previous learning plans will appear here
                   </p>
@@ -216,10 +202,8 @@ const ProfilePage: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Account Settings */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Account Settings</h2>
-              
               <form className="space-y-4">
                 <div>
                   <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
@@ -233,7 +217,6 @@ const ProfilePage: React.FC = () => {
                     disabled
                   />
                 </div>
-                
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                     Email Address
@@ -246,7 +229,6 @@ const ProfilePage: React.FC = () => {
                     disabled
                   />
                 </div>
-                
                 <div>
                   <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 mb-1">
                     New Password
@@ -258,7 +240,6 @@ const ProfilePage: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                
                 <div>
                   <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">
                     Confirm New Password
@@ -270,7 +251,6 @@ const ProfilePage: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                
                 <div className="pt-2">
                   <button
                     type="submit"
@@ -280,75 +260,6 @@ const ProfilePage: React.FC = () => {
                   </button>
                 </div>
               </form>
-            </div>
-            
-            {/* Notification Settings */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Notification Settings</h2>
-              
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-gray-800">Email Notifications</h3>
-                    <p className="text-sm text-gray-600">Receive updates about your progress</p>
-                  </div>
-                  <div className="relative inline-block w-12 h-6 border-2 border-gray-300 rounded-full">
-                    <input type="checkbox" id="email-toggle" className="sr-only" defaultChecked />
-                    <span className="block absolute left-0 top-0 bottom-0 rounded-full w-1/2 h-full transform translate-x-full bg-blue-600"></span>
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-gray-800">Daily Reminders</h3>
-                    <p className="text-sm text-gray-600">Reminder to complete your daily tasks</p>
-                  </div>
-                  <div className="relative inline-block w-12 h-6 border-2 border-gray-300 rounded-full">
-                    <input type="checkbox" id="reminder-toggle" className="sr-only" defaultChecked />
-                    <span className="block absolute left-0 top-0 bottom-0 rounded-full w-1/2 h-full transform translate-x-full bg-blue-600"></span>
-                  </div>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium text-gray-800">Test Notifications</h3>
-                    <p className="text-sm text-gray-600">Notifications about upcoming tests</p>
-                  </div>
-                  <div className="relative inline-block w-12 h-6 border-2 border-gray-300 rounded-full">
-                    <input type="checkbox" id="test-toggle" className="sr-only" defaultChecked />
-                    <span className="block absolute left-0 top-0 bottom-0 rounded-full w-1/2 h-full transform translate-x-full bg-blue-600"></span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-6">
-                <button
-                  type="button"
-                  className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
-                >
-                  Save Notification Settings
-                </button>
-              </div>
-            </div>
-            
-            {/* Danger Zone */}
-            <div className="bg-white rounded-lg shadow-sm p-6 border-t-4 border-red-500">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">Danger Zone</h2>
-              
-              <div className="space-y-4">
-                <div className="bg-red-50 border border-red-200 rounded-md p-4">
-                  <h3 className="font-medium text-red-800 mb-1">Delete Account</h3>
-                  <p className="text-sm text-red-700 mb-3">
-                    Once you delete your account, there is no going back. Please be certain.
-                  </p>
-                  <button
-                    type="button"
-                    className="px-4 py-2 bg-white border border-red-300 text-red-600 rounded-md hover:bg-red-50"
-                  >
-                    Delete Account
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         )}

@@ -6,44 +6,41 @@ import ProgressCircle from '../components/ProgressCircle';
 import TaskCard from '../components/TaskCard';
 import AttendanceCamera from '../components/AttendanceCamera';
 
-const Dashboard: React.FC = () => {
+const Dashboard = () => {
   const { currentPlan, getCurrentDay, markTaskComplete, markAttendance, getAttendancePercentage } = usePlan();
   const [currentDayPlan, setCurrentDayPlan] = useState(getCurrentDay());
   const [showAttendanceCamera, setShowAttendanceCamera] = useState(false);
-  
+
   useEffect(() => {
     setCurrentDayPlan(getCurrentDay());
   }, [currentPlan, getCurrentDay]);
-  
-  const handleTaskComplete = (taskId: string) => {
+
+  const handleTaskComplete = (taskId) => {
     if (currentDayPlan) {
       markTaskComplete(currentDayPlan.day - 1, taskId);
-      // Update current day plan
       setCurrentDayPlan(getCurrentDay());
     }
   };
-  
+
   const handleAttendanceMarked = () => {
     if (currentDayPlan) {
       markAttendance(currentDayPlan.day - 1);
       setShowAttendanceCamera(false);
-      // Update current day plan
       setCurrentDayPlan(getCurrentDay());
     }
   };
-  
-  // Calculate completed tasks percentage
+
   const getCompletedTasksPercentage = () => {
     if (!currentPlan) return 0;
-    
+
     const totalTasks = currentPlan.days.reduce((acc, day) => acc + day.tasks.length, 0);
     const completedTasks = currentPlan.days.reduce((acc, day) => {
       return acc + day.tasks.filter(task => task.completed).length;
     }, 0);
-    
+
     return totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
   };
-  
+
   if (!currentPlan) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -65,14 +62,12 @@ const Dashboard: React.FC = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">
-          Your Dashboard
-        </h1>
-        
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">Your Dashboard</h1>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Progress */}
           <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col items-center justify-center">
@@ -86,7 +81,7 @@ const Dashboard: React.FC = () => {
               Overall Progress: {getCompletedTasksPercentage()}% completed
             </p>
           </div>
-          
+
           {/* Attendance */}
           <div className="bg-white rounded-lg shadow-sm p-6 flex flex-col items-center justify-center">
             <ProgressCircle percentage={getAttendancePercentage()} color="#10B981">
@@ -99,7 +94,7 @@ const Dashboard: React.FC = () => {
               Attendance: {getAttendancePercentage()}% of days marked
             </p>
           </div>
-          
+
           {/* Day Info */}
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between mb-3">
@@ -123,7 +118,7 @@ const Dashboard: React.FC = () => {
               <span className="text-gray-600 text-sm">Time Per Day:</span>
               <span className="font-medium text-gray-800">{currentPlan.timePerDay} min</span>
             </div>
-            
+
             {/* Attendance Button */}
             {currentDayPlan && !currentDayPlan.attendanceMarked ? (
               <button
@@ -141,20 +136,20 @@ const Dashboard: React.FC = () => {
             )}
           </div>
         </div>
-        
+
         {showAttendanceCamera && (
           <div className="mb-8">
             <AttendanceCamera onAttendanceMarked={handleAttendanceMarked} />
           </div>
         )}
-        
+
         {/* Today's Tasks */}
         <div className="mb-6">
           <div className="flex items-center mb-4">
             <ClipboardList className="h-5 w-5 text-blue-600 mr-2" />
             <h2 className="text-xl font-semibold text-gray-800">Today's Tasks</h2>
           </div>
-          
+
           {currentDayPlan && currentDayPlan.tasks.length > 0 ? (
             <div className="space-y-4">
               {currentDayPlan.tasks.map((task) => (
@@ -171,7 +166,7 @@ const Dashboard: React.FC = () => {
             </div>
           )}
         </div>
-        
+
         <div className="flex justify-between">
           <Link
             to="/plan"
@@ -179,7 +174,7 @@ const Dashboard: React.FC = () => {
           >
             View Full Plan
           </Link>
-          
+
           <Link
             to="/tasks"
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"

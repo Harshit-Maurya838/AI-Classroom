@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { usePlan } from '../context/PlanContext';
 import TaskCard from '../components/TaskCard';
-import { Calendar, Filter, CheckCircle, X } from 'lucide-react';
+import { Calendar, Filter, X } from 'lucide-react';
 
-const TasksPage: React.FC = () => {
+const TasksPage = () => {
   const { currentPlan, markTaskComplete } = usePlan();
-  const [filter, setFilter] = useState<'all' | 'completed' | 'pending'>('all');
-  const [typeFilter, setTypeFilter] = useState<string | null>(null);
-  
+  const [filter, setFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState(null);
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+
   if (!currentPlan) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -22,74 +23,79 @@ const TasksPage: React.FC = () => {
       </div>
     );
   }
-  
-  // Flatten all tasks from all days
+
   const allTasks = currentPlan.days.flatMap(day => 
     day.tasks.map(task => ({
       ...task,
-      dayIndex: day.day - 1, // Store the day index
+      dayIndex: day.day - 1,
       dayNumber: day.day,
     }))
   );
-  
-  // Apply filters
+
   const filteredTasks = allTasks.filter(task => {
     if (filter === 'completed' && !task.completed) return false;
     if (filter === 'pending' && task.completed) return false;
     if (typeFilter && task.type !== typeFilter) return false;
     return true;
   });
-  
-  // Get all unique task types
+
   const taskTypes = Array.from(new Set(allTasks.map(task => task.type)));
-  
-  const handleMarkComplete = (dayIndex: number, taskId: string) => {
+
+  const handleMarkComplete = (dayIndex, taskId) => {
     markTaskComplete(dayIndex, taskId);
   };
-  
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">
-            All Tasks
-          </h1>
-          
-          <div className="flex items-center space-x-2">
-            <div className="relative inline-block">
-              <button
-                className="inline-flex items-center px-3 py-2 border border-gray-300 bg-white rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                <Filter className="h-4 w-4 mr-1" />
-                {filter === 'all' ? 'All Tasks' : filter === 'completed' ? 'Completed' : 'Pending'}
-              </button>
-              <div className="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none z-10 hidden">
+          <h1 className="text-2xl font-bold text-gray-800">All Tasks</h1>
+
+          <div className="relative inline-block">
+            <button
+              onClick={() => setShowFilterMenu(!showFilterMenu)}
+              className="inline-flex items-center px-3 py-2 border border-gray-300 bg-white rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              <Filter className="h-4 w-4 mr-1" />
+              {filter === 'all' ? 'All Tasks' : filter === 'completed' ? 'Completed' : 'Pending'}
+            </button>
+
+            {showFilterMenu && (
+              <div className="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none z-10">
                 <div className="py-1">
                   <button
-                    onClick={() => setFilter('all')}
+                    onClick={() => {
+                      setFilter('all');
+                      setShowFilterMenu(false);
+                    }}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                   >
                     All Tasks
                   </button>
                   <button
-                    onClick={() => setFilter('completed')}
+                    onClick={() => {
+                      setFilter('completed');
+                      setShowFilterMenu(false);
+                    }}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                   >
                     Completed
                   </button>
                   <button
-                    onClick={() => setFilter('pending')}
+                    onClick={() => {
+                      setFilter('pending');
+                      setShowFilterMenu(false);
+                    }}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                   >
                     Pending
                   </button>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
-        
-        {/* Task Type Filters */}
+
         <div className="flex flex-wrap gap-2 mb-6">
           <button
             onClick={() => setTypeFilter(null)}
@@ -101,7 +107,7 @@ const TasksPage: React.FC = () => {
           >
             All Types
           </button>
-          
+
           {taskTypes.map(type => (
             <button
               key={type}
@@ -122,8 +128,7 @@ const TasksPage: React.FC = () => {
             </button>
           ))}
         </div>
-        
-        {/* Active filters */}
+
         {(filter !== 'all' || typeFilter) && (
           <div className="flex items-center mb-4 bg-gray-50 p-3 rounded-md">
             <span className="text-sm text-gray-600 mr-2">Active filters:</span>
@@ -136,7 +141,6 @@ const TasksPage: React.FC = () => {
                   </button>
                 </div>
               )}
-              
               {typeFilter && (
                 <div className={`px-2 py-1 rounded-md text-xs flex items-center ${
                   typeFilter === 'Lesson' ? 'bg-blue-100 text-blue-800' :
@@ -150,7 +154,6 @@ const TasksPage: React.FC = () => {
                   </button>
                 </div>
               )}
-              
               <button 
                 className="text-xs text-gray-500 hover:text-gray-700"
                 onClick={() => {
@@ -163,11 +166,10 @@ const TasksPage: React.FC = () => {
             </div>
           </div>
         )}
-        
-        {/* Tasks List */}
+
         <div className="space-y-4">
           {filteredTasks.length > 0 ? (
-            filteredTasks.map((task) => (
+            filteredTasks.map(task => (
               <div key={task.id} className="space-y-3">
                 <div className="flex items-center text-sm text-gray-600">
                   <Calendar className="h-4 w-4 mr-1" />

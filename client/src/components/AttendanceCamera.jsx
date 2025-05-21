@@ -2,14 +2,10 @@ import React, { useState, useRef } from 'react';
 import Webcam from 'react-webcam';
 import { Camera, CheckCircle } from 'lucide-react';
 
-interface AttendanceCameraProps {
-  onAttendanceMarked: () => void;
-}
-
-const AttendanceCamera: React.FC<AttendanceCameraProps> = ({ onAttendanceMarked }) => {
+const AttendanceCamera = ({ onAttendanceMarked }) => {
   const [cameraActive, setCameraActive] = useState(false);
   const [attendanceMarked, setAttendanceMarked] = useState(false);
-  const webcamRef = useRef<Webcam>(null);
+  const webcamRef = useRef(null);
   
   const activateCamera = () => {
     setCameraActive(true);

@@ -1,16 +1,25 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { GraduationCap, LayoutDashboard, BookOpen, ClipboardCheck, BarChart2, Wallet, User, LogOut } from 'lucide-react';
+import {
+  GraduationCap,
+  LayoutDashboard,
+  BookOpen,
+  ClipboardCheck,
+  BarChart2,
+  Wallet,
+  User,
+  LogOut
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const Navbar: React.FC = () => {
+const Navbar = () => {
   const { isAuthenticated, logout } = useAuth();
   const location = useLocation();
   
   if (!isAuthenticated) {
     return null;
   }
-  
+
   const navItems = [
     { path: '/dashboard', name: 'Dashboard', icon: <LayoutDashboard size={20} /> },
     { path: '/plan', name: 'Plan', icon: <BookOpen size={20} /> },
@@ -31,7 +40,7 @@ const Navbar: React.FC = () => {
               <span className="ml-2 text-xl font-bold text-blue-600">AI Classroom</span>
             </Link>
           </div>
-          
+
           <div className="hidden md:block">
             <div className="flex items-center space-x-4">
               {navItems.map((item) => (
@@ -57,7 +66,7 @@ const Navbar: React.FC = () => {
               </button>
             </div>
           </div>
-          
+
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {navItems.map((item) => (

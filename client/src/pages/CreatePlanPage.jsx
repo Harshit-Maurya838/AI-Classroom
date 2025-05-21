@@ -6,40 +6,39 @@ import {
 } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 
-const CreatePlanPage: React.FC = () => {
+const CreatePlanPage = () => {
   const [step, setStep] = useState(1);
   const [topic, setTopic] = useState('');
-  const [level, setLevel] = useState<'Beginner' | 'Intermediate' | 'Advanced'>('Beginner');
+  const [level, setLevel] = useState('Beginner');
   const [timePerDay, setTimePerDay] = useState(60);
   const [duration, setDuration] = useState(30);
   const [lockedAmount, setLockedAmount] = useState(1000);
   const [isGenerating, setIsGenerating] = useState(false);
-  
+
   const { createPlan } = usePlan();
   const navigate = useNavigate();
-  
+
   const handleNext = () => {
     if (step === 1 && !topic) {
-      return; // Don't proceed if topic is empty
+      return;
     }
     setStep(step + 1);
   };
-  
+
   const handleBack = () => {
     setStep(step - 1);
   };
-  
+
   const handleSubmit = () => {
     setIsGenerating(true);
-    
-    // Simulate AI plan generation with a delay
+
     setTimeout(() => {
       createPlan(topic, level, timePerDay, duration, lockedAmount);
       setIsGenerating(false);
       navigate('/dashboard');
     }, 2000);
   };
-  
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto">
@@ -54,7 +53,7 @@ const CreatePlanPage: React.FC = () => {
           )}
           <h1 className="text-2xl font-bold text-gray-800">Create Your Learning Plan</h1>
         </div>
-        
+
         {/* Progress Steps */}
         <div className="flex items-center mb-8">
           {[1, 2, 3, 4].map((s) => (
@@ -80,20 +79,17 @@ const CreatePlanPage: React.FC = () => {
             </div>
           ))}
         </div>
-        
+
         <div className="bg-white rounded-lg shadow-sm p-6">
-          {/* Step 1: Topic */}
+          {/* Step 1 */}
           {step === 1 && (
             <div className="space-y-6">
               <div className="flex items-center mb-2">
                 <BookOpen className="h-5 w-5 text-blue-600 mr-2" />
                 <h2 className="text-xl font-semibold text-gray-800">What do you want to learn?</h2>
               </div>
-              
               <div>
-                <label htmlFor="topic" className="block text-sm font-medium text-gray-700 mb-1">
-                  Topic
-                </label>
+                <label htmlFor="topic" className="block text-sm font-medium text-gray-700 mb-1">Topic</label>
                 <input
                   id="topic"
                   type="text"
@@ -104,13 +100,11 @@ const CreatePlanPage: React.FC = () => {
                   required
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Level
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
                 <div className="grid grid-cols-3 gap-3">
-                  {(['Beginner', 'Intermediate', 'Advanced'] as const).map((l) => (
+                  {['Beginner', 'Intermediate', 'Advanced'].map((l) => (
                     <button
                       key={l}
                       type="button"
@@ -128,19 +122,16 @@ const CreatePlanPage: React.FC = () => {
               </div>
             </div>
           )}
-          
-          {/* Step 2: Time */}
+
+          {/* Step 2 */}
           {step === 2 && (
             <div className="space-y-6">
               <div className="flex items-center mb-2">
                 <Clock className="h-5 w-5 text-blue-600 mr-2" />
                 <h2 className="text-xl font-semibold text-gray-800">How much time can you commit?</h2>
               </div>
-              
               <div>
-                <label htmlFor="timePerDay" className="block text-sm font-medium text-gray-700 mb-1">
-                  Time per day (minutes)
-                </label>
+                <label htmlFor="timePerDay" className="block text-sm font-medium text-gray-700 mb-1">Time per day (minutes)</label>
                 <input
                   id="timePerDay"
                   type="range"
@@ -155,11 +146,9 @@ const CreatePlanPage: React.FC = () => {
                   {timePerDay} minutes per day
                 </div>
               </div>
-              
+
               <div className="pt-4">
-                <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-1">
-                  Duration (days)
-                </label>
+                <label htmlFor="duration" className="block text-sm font-medium text-gray-700 mb-1">Duration (days)</label>
                 <div className="flex items-center space-x-3">
                   <button
                     type="button"
@@ -201,25 +190,21 @@ const CreatePlanPage: React.FC = () => {
               </div>
             </div>
           )}
-          
-          {/* Step 3: Wallet */}
+
+          {/* Step 3 */}
           {step === 3 && (
             <div className="space-y-6">
               <div className="flex items-center mb-2">
                 <Wallet className="h-5 w-5 text-blue-600 mr-2" />
                 <h2 className="text-xl font-semibold text-gray-800">Set your accountability amount</h2>
               </div>
-              
               <div className="bg-blue-50 border border-blue-100 rounded-md p-4 mb-4">
                 <p className="text-sm text-blue-800">
                   Lock an amount that you'll get back if you maintain ≥75% attendance throughout the course.
                 </p>
               </div>
-              
               <div>
-                <label htmlFor="lockedAmount" className="block text-sm font-medium text-gray-700 mb-1">
-                  Amount to lock (in ₹)
-                </label>
+                <label htmlFor="lockedAmount" className="block text-sm font-medium text-gray-700 mb-1">Amount to lock (in ₹)</label>
                 <input
                   id="lockedAmount"
                   type="number"
@@ -230,7 +215,6 @@ const CreatePlanPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
-              
               <div className="grid grid-cols-3 gap-2 mt-3">
                 {[500, 1000, 2000].map((amount) => (
                   <button
@@ -249,104 +233,43 @@ const CreatePlanPage: React.FC = () => {
               </div>
             </div>
           )}
-          
-          {/* Step 4: Summary */}
+
+          {/* Step 4 */}
           {step === 4 && (
             <div className="space-y-6">
               <div className="flex items-center mb-2">
                 <CheckCircle className="h-5 w-5 text-blue-600 mr-2" />
                 <h2 className="text-xl font-semibold text-gray-800">Summary</h2>
               </div>
-              
-              <div className="space-y-4">
-                <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                  <div className="flex items-center">
-                    <BookOpen className="h-4 w-4 text-gray-500 mr-2" />
-                    <span className="text-gray-600">Topic</span>
-                  </div>
-                  <span className="font-medium text-gray-800">{topic}</span>
-                </div>
-                
-                <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                  <div className="flex items-center">
-                    <Brain className="h-4 w-4 text-gray-500 mr-2" />
-                    <span className="text-gray-600">Level</span>
-                  </div>
-                  <span className="font-medium text-gray-800">{level}</span>
-                </div>
-                
-                <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                  <div className="flex items-center">
-                    <Clock className="h-4 w-4 text-gray-500 mr-2" />
-                    <span className="text-gray-600">Time per day</span>
-                  </div>
-                  <span className="font-medium text-gray-800">{timePerDay} minutes</span>
-                </div>
-                
-                <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 text-gray-500 mr-2" />
-                    <span className="text-gray-600">Duration</span>
-                  </div>
-                  <span className="font-medium text-gray-800">{duration} days</span>
-                </div>
-                
-                <div className="flex items-center justify-between py-2 border-b border-gray-100">
-                  <div className="flex items-center">
-                    <Wallet className="h-4 w-4 text-gray-500 mr-2" />
-                    <span className="text-gray-600">Locked amount</span>
-                  </div>
-                  <span className="font-medium text-gray-800">₹{lockedAmount}</span>
-                </div>
-                
-                <div className="flex items-center justify-between py-2">
-                  <div className="flex items-center">
-                    <BarChart3 className="h-4 w-4 text-gray-500 mr-2" />
-                    <span className="text-gray-600">Target attendance</span>
-                  </div>
-                  <span className="font-medium text-green-600">≥75%</span>
-                </div>
-              </div>
-            </div>
-          )}
-          
-          {/* Action Buttons */}
-          <div className="mt-8 flex justify-end">
-            {step < 4 ? (
+              <ul className="text-gray-700 space-y-2">
+                <li><strong>Topic:</strong> {topic}</li>
+                <li><strong>Level:</strong> {level}</li>
+                <li><strong>Time per day:</strong> {timePerDay} minutes</li>
+                <li><strong>Duration:</strong> {duration} days</li>
+                <li><strong>Locked Amount:</strong> ₹{lockedAmount}</li>
+              </ul>
               <button
-                type="button"
-                onClick={handleNext}
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none transition-colors duration-200"
-                disabled={step === 1 && !topic}
-              >
-                Next Step
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </button>
-            ) : (
-              <button
-                type="button"
                 onClick={handleSubmit}
                 disabled={isGenerating}
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none transition-colors duration-200"
+                className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
               >
-                {isGenerating ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Generating Plan...
-                  </>
-                ) : (
-                  <>
-                    Generate My Plan
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </>
-                )}
+                {isGenerating ? 'Generating Plan...' : 'Create Plan'}
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
+
+        {/* Next Button */}
+        {step < 4 && (
+          <div className="mt-6 text-right">
+            <button
+              onClick={handleNext}
+              className="py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

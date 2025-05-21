@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, CheckCircle, Clock, ArrowRight, Brain, BookOpen } from 'lucide-react';
+import { Calendar, CheckCircle, Clock, ArrowRight, BookOpen } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import ProgressCircle from '../components/ProgressCircle';
 
-const PlanPage: React.FC = () => {
+const PlanPage = () => {
   const { currentPlan, getAttendancePercentage } = usePlan();
   
   if (!currentPlan) {
@@ -28,20 +28,19 @@ const PlanPage: React.FC = () => {
       </div>
     );
   }
-  
-  // Calculate progress percentages
+
   const getDaysCompletedPercentage = () => {
     const completedDays = currentPlan.days.filter(day => day.completed).length;
     return Math.round((completedDays / currentPlan.days.length) * 100);
   };
-  
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
           Your Study Plan
         </h1>
-        
+
         {/* Plan Overview */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -50,7 +49,7 @@ const PlanPage: React.FC = () => {
                 <BookOpen className="h-5 w-5 text-blue-600 mr-2" />
                 Plan Overview
               </h2>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Topic:</span>
@@ -80,7 +79,7 @@ const PlanPage: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex flex-col items-center justify-center">
               <div className="flex space-x-6">
                 <div className="flex flex-col items-center">
@@ -95,7 +94,7 @@ const PlanPage: React.FC = () => {
                   </ProgressCircle>
                   <p className="mt-2 text-sm text-gray-600">Days Completed</p>
                 </div>
-                
+
                 <div className="flex flex-col items-center">
                   <ProgressCircle 
                     percentage={getAttendancePercentage()} 
@@ -109,7 +108,7 @@ const PlanPage: React.FC = () => {
                   <p className="mt-2 text-sm text-gray-600">Attendance</p>
                 </div>
               </div>
-              
+
               <Link
                 to="/dashboard"
                 className="mt-6 inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200"
@@ -120,14 +119,14 @@ const PlanPage: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Day-by-Day Plan */}
         <div>
           <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
             <Calendar className="h-5 w-5 text-blue-600 mr-2" />
             Day-by-Day Plan
           </h2>
-          
+
           <div className="space-y-4">
             {currentPlan.days.map((day) => (
               <div 
@@ -157,7 +156,7 @@ const PlanPage: React.FC = () => {
                     </div>
                     <h3 className="font-medium text-gray-800">Day {day.day}</h3>
                   </div>
-                  
+
                   <div className="flex items-center">
                     {day.attendanceMarked && (
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2">
@@ -165,18 +164,17 @@ const PlanPage: React.FC = () => {
                         Present
                       </span>
                     )}
-                    
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       <Clock className="h-3 w-3 mr-1" />
                       {currentPlan.timePerDay} min
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="pl-11">
                   <ul className="space-y-1 text-sm text-gray-600">
-                    {day.tasks.map((task) => (
-                      <li key={task.id} className="flex items-center">
+                    {day.tasks.map((task, index) => (
+                      <li key={index} className="flex items-center">
                         <span className={`w-4 h-4 rounded-full mr-2 ${
                           task.completed ? 'bg-green-500' : 'bg-gray-300'
                         }`}></span>

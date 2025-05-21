@@ -1,13 +1,7 @@
 import React from 'react';
 import { CheckCircle, Book, FileQuestion, Video, RefreshCw } from 'lucide-react';
-import { Task } from '../types';
 
-interface TaskCardProps {
-  task: Task;
-  onComplete: () => void;
-}
-
-const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
+const TaskCard = ({ task, onComplete }) => {
   const getIcon = () => {
     switch (task.type) {
       case 'Lesson':
@@ -22,7 +16,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
         return <Book size={24} className="text-blue-500" />;
     }
   };
-  
+
   const getTaskTypeColor = () => {
     switch (task.type) {
       case 'Lesson':
@@ -37,7 +31,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
         return 'bg-gray-100 text-gray-800';
     }
   };
-  
+
   return (
     <div className={`border rounded-lg p-4 shadow-sm ${task.completed ? 'bg-gray-50 border-gray-200' : 'bg-white border-gray-200'} transition-all duration-200 hover:shadow-md`}>
       <div className="flex items-start justify-between">
@@ -51,7 +45,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
               </span>
             </div>
             <p className="text-gray-600 text-sm mt-1">{task.description}</p>
-            
+
             {task.videoUrl && (
               <div className="mt-3 w-full">
                 <iframe
@@ -66,7 +60,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
                 ></iframe>
               </div>
             )}
-            
+
             {task.content && (
               <div className="mt-3">
                 <p className="text-gray-700 text-sm">{task.content}</p>
@@ -74,7 +68,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onComplete }) => {
             )}
           </div>
         </div>
-        
+
         <button
           onClick={onComplete}
           disabled={task.completed}

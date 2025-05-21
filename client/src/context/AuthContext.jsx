@@ -1,23 +1,13 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { User } from '../types';
 import { mockUsers } from '../utils/mockData';
 
-interface AuthContextType {
-  currentUser: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  signup: (username: string, email: string, password: string) => Promise<boolean>;
-  logout: () => void;
-  isAuthenticated: boolean;
-}
+const AuthContext = createContext(undefined);
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+export const AuthProvider = ({ children }) => {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Check if user is stored in localStorage
     const storedUser = localStorage.getItem('aiClassroomUser');
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
@@ -25,43 +15,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    // Mock authentication - in a real app, this would call an API
+  const login = async (email, password) => {
     const user = mockUsers.find(u => u.email === email && u.password === password);
-    
+
     if (user) {
       setCurrentUser(user);
       setIsAuthenticated(true);
       localStorage.setItem('aiClassroomUser', JSON.stringify(user));
       return true;
     }
-    
+
     return false;
   };
 
-  const signup = async (username: string, email: string, password: string): Promise<boolean> => {
-    // Check if user already exists
+  const signup = async (username, email, password) => {
     const existingUser = mockUsers.find(u => u.email === email);
     if (existingUser) {
       return false;
     }
-    
-    // Create new user
-    const newUser: User = {
+
+    const newUser = {
       id: `user-${Date.now()}`,
       username,
       email,
       password,
     };
-    
-    // In a real app, this would call an API
+
     mockUsers.push(newUser);
-    
-    // Automatically log in the new user
     setCurrentUser(newUser);
     setIsAuthenticated(true);
     localStorage.setItem('aiClassroomUser', JSON.stringify(newUser));
-    
+
     return true;
   };
 
@@ -78,7 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-export const useAuth = (): AuthContextType => {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');

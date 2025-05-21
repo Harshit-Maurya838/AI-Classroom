@@ -1,117 +1,114 @@
 import React, { useState } from 'react';
 import { mockTests, mockInterviews } from '../utils/mockData';
-import { Test, Interview, MCQQuestion } from '../types';
-import { FileQuestion, Clock, Calendar, CheckCircle, ChevronDown, ChevronUp, FileText } from 'lucide-react';
+import {
+  FileQuestion,
+  Clock,
+  CheckCircle,
+} from 'lucide-react';
 
-const TestsPage: React.FC = () => {
-  const [tests, setTests] = useState<Test[]>(mockTests);
-  const [interviews, setInterviews] = useState<Interview[]>(mockInterviews);
-  const [activeTest, setActiveTest] = useState<Test | null>(null);
-  const [activeInterview, setActiveInterview] = useState<Interview | null>(null);
-  const [userAnswers, setUserAnswers] = useState<{ [questionId: string]: number }>({});
+const TestsPage = () => {
+  const [tests, setTests] = useState(mockTests);
+  const [interviews, setInterviews] = useState(mockInterviews);
+  const [activeTest, setActiveTest] = useState(null);
+  const [activeInterview, setActiveInterview] = useState(null);
+  const [userAnswers, setUserAnswers] = useState({});
   const [testSubmitted, setTestSubmitted] = useState(false);
   const [interviewSubmitted, setInterviewSubmitted] = useState(false);
-  const [interviewAnswers, setInterviewAnswers] = useState<{ [questionId: string]: string }>({});
-  
-  const handleSelectAnswer = (questionId: string, optionIndex: number) => {
+  const [interviewAnswers, setInterviewAnswers] = useState({});
+
+  const handleSelectAnswer = (questionId, optionIndex) => {
     setUserAnswers({
       ...userAnswers,
       [questionId]: optionIndex,
     });
   };
-  
+
   const handleSubmitTest = () => {
     if (!activeTest) return;
-    
-    // Calculate score
+
     let correctAnswers = 0;
     let totalQuestions = activeTest.questions.length;
-    
+
     activeTest.questions.forEach(question => {
       if (userAnswers[question.id] === question.correctAnswer) {
         correctAnswers++;
       }
     });
-    
+
     const score = Math.round((correctAnswers / totalQuestions) * 100);
-    
-    // Update test with score
-    const updatedTests = tests.map(test => 
+
+    const updatedTests = tests.map(test =>
       test.id === activeTest.id
         ? { ...test, completed: true, score }
         : test
     );
-    
+
     setTests(updatedTests);
     setTestSubmitted(true);
   };
-  
-  const handleInterviewAnswerChange = (questionIndex: number, answer: string) => {
-    if (!activeInterview) return;
-    
+
+  const handleInterviewAnswerChange = (questionIndex, answer) => {
     setInterviewAnswers({
       ...interviewAnswers,
       [`q${questionIndex}`]: answer,
     });
   };
-  
+
   const handleSubmitInterview = () => {
     if (!activeInterview) return;
-    
-    // Update interview as completed
-    const updatedInterviews = interviews.map(interview => 
+
+    const updatedInterviews = interviews.map(interview =>
       interview.id === activeInterview.id
-        ? { 
-            ...interview, 
-            completed: true, 
-            feedback: 'Your responses show a good understanding of the core concepts. Continue practicing application in real-world scenarios.'
+        ? {
+            ...interview,
+            completed: true,
+            feedback:
+              'Your responses show a good understanding of the core concepts. Continue practicing application in real-world scenarios.',
           }
         : interview
     );
-    
+
     setInterviews(updatedInterviews);
     setInterviewSubmitted(true);
   };
-  
-  const startTest = (test: Test) => {
+
+  const startTest = (test) => {
     setActiveTest(test);
     setUserAnswers({});
     setTestSubmitted(false);
   };
-  
-  const startInterview = (interview: Interview) => {
+
+  const startInterview = (interview) => {
     setActiveInterview(interview);
     setInterviewAnswers({});
     setInterviewSubmitted(false);
   };
-  
+
   const resetTest = () => {
     setActiveTest(null);
     setUserAnswers({});
     setTestSubmitted(false);
   };
-  
+
   const resetInterview = () => {
     setActiveInterview(null);
     setInterviewAnswers({});
     setInterviewSubmitted(false);
   };
-  
-  const formatDueDate = (date: Date) => {
+
+  const formatDueDate = (date) => {
     const today = new Date();
     const dueDate = new Date(date);
-    
-    // Calculate difference in days
     const diffTime = Math.abs(dueDate.getTime() - today.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Tomorrow';
     if (diffDays < 7) return `In ${diffDays} days`;
-    
+
     return dueDate.toLocaleDateString();
   };
-  
+
   if (activeTest) {
     return (
       <div className="container mx-auto px-4 py-8">

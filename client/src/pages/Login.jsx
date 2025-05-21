@@ -1,28 +1,21 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UserPlus, GraduationCap } from 'lucide-react';
+import { LogIn, GraduationCap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const Signup: React.FC = () => {
-  const [username, setUsername] = useState('');
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { signup } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!username || !email || !password || !confirmPassword) {
+    if (!email || !password) {
       setError('Please fill in all fields');
-      return;
-    }
-    
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
       return;
     }
     
@@ -30,12 +23,12 @@ const Signup: React.FC = () => {
     setError('');
     
     try {
-      const success = await signup(username, email, password);
+      const success = await login(email, password);
       
       if (success) {
-        navigate('/create-plan');
+        navigate('/dashboard');
       } else {
-        setError('Email already in use');
+        setError('Invalid email or password');
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -52,11 +45,11 @@ const Signup: React.FC = () => {
           <div className="flex justify-center">
             <GraduationCap className="h-12 w-12 text-blue-600" />
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Create your account</h2>
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Sign in to AI Classroom</h2>
           <p className="mt-2 text-sm text-gray-600">
             Or{' '}
-            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
-              sign in to your account
+            <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500">
+              create a new account
             </Link>
           </p>
         </div>
@@ -70,25 +63,7 @@ const Signup: React.FC = () => {
           
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="username" className="sr-only">
-                Username
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                autoComplete="username"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Username"
-              />
-            </div>
-            <div>
-              <label htmlFor="email-address" className="sr-only">
-                Email address
-              </label>
+              <label htmlFor="email-address" className="sr-only">Email address</label>
               <input
                 id="email-address"
                 name="email"
@@ -97,40 +72,22 @@ const Signup: React.FC = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
+              <label htmlFor="password" className="sr-only">Password</label>
               <input
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="new-password"
+                autoComplete="current-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-              />
-            </div>
-            <div>
-              <label htmlFor="confirm-password" className="sr-only">
-                Confirm Password
-              </label>
-              <input
-                id="confirm-password"
-                name="confirm-password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Confirm Password"
+                placeholder="Password"
               />
             </div>
           </div>
@@ -144,15 +101,29 @@ const Signup: React.FC = () => {
               }`}
             >
               <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                <UserPlus className="h-5 w-5 text-blue-500 group-hover:text-blue-400" />
+                <LogIn className="h-5 w-5 text-blue-500 group-hover:text-blue-400" />
               </span>
-              {isLoading ? 'Creating account...' : 'Sign up'}
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
+          
+          <div className="flex items-center justify-center">
+            <div className="text-sm">
+              <Link to="#" className="font-medium text-blue-600 hover:text-blue-500">
+                Forgot your password?
+              </Link>
+            </div>
+          </div>
         </form>
+        
+        <div className="mt-6 bg-blue-50 px-4 py-3 rounded-md border border-blue-100">
+          <h3 className="text-sm font-medium text-blue-800">Demo Credentials</h3>
+          <p className="text-xs text-blue-600 mt-1">Email: john@example.com</p>
+          <p className="text-xs text-blue-600">Password: password123</p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default Signup;
+export default Login;
