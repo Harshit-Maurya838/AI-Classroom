@@ -23,9 +23,9 @@ const Navbar = () => {
   const navItems = [
     { path: '/dashboard', name: 'Dashboard', icon: <LayoutDashboard size={20} /> },
     { path: '/plan', name: 'Plan', icon: <BookOpen size={20} /> },
-    { path: '/tasks', name: 'Tasks', icon: <ClipboardCheck size={20} /> },
-    { path: '/notes', name: 'Notes', icon: <GraduationCap size={20} /> },
-    { path: '/tests', name: 'Tests', icon: <BarChart2 size={20} /> },
+    // { path: '/tasks', name: 'Tasks', icon: <ClipboardCheck size={20} /> },
+    // { path: '/notes', name: 'Notes', icon: <GraduationCap size={20} /> },
+    // { path: '/tests', name: 'Tests', icon: <BarChart2 size={20} /> },
     { path: '/wallet', name: 'Wallet', icon: <Wallet size={20} /> },
     { path: '/profile', name: 'Profile', icon: <User size={20} /> },
   ];

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { plan } from '../utils/planmockdata';
 import { Calendar, CheckCircle, Clock, ArrowRight, BookOpen } from 'lucide-react';
 import { usePlan } from '../context/PlanContext';
 import ProgressCircle from '../components/ProgressCircle';
@@ -121,72 +122,64 @@ const PlanPage = () => {
         </div>
 
         {/* Day-by-Day Plan */}
+      {/* Day-by-Day Plan */}
         <div>
           <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
             <Calendar className="h-5 w-5 text-blue-600 mr-2" />
             Day-by-Day Plan
           </h2>
-
+          
           <div className="space-y-4">
-            {currentPlan.days.map((day) => (
+            {plan.map((day) => (
               <div 
                 key={day.day}
-                className={`border rounded-lg p-4 ${
-                  day.completed 
-                    ? 'bg-green-50 border-green-200' 
-                    : day.attendanceMarked 
-                    ? 'bg-blue-50 border-blue-200'
-                    : 'bg-white border-gray-200'
-                }`}
+                className="border rounded-lg p-4 bg-white border-gray-200 hover:border-blue-300 transition-colors duration-200"
               >
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 ${
-                      day.completed 
-                        ? 'bg-green-500 text-white' 
-                        : day.attendanceMarked 
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-200 text-gray-700'
-                    }`}>
-                      {day.completed ? (
-                        <CheckCircle className="h-5 w-5" />
-                      ) : (
-                        day.day
-                      )}
+                    <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mr-3">
+                      {day.day}
                     </div>
                     <h3 className="font-medium text-gray-800">Day {day.day}</h3>
                   </div>
-
+                  
                   <div className="flex items-center">
-                    {day.attendanceMarked && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mr-2">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Present
-                      </span>
-                    )}
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       <Clock className="h-3 w-3 mr-1" />
-                      {currentPlan.timePerDay} min
+                      {day.tasks.reduce((total, task) => {
+                        const duration = parseInt(task.duration);
+                        return isNaN(duration) ? total : total + duration;
+                      }, 0)} min
                     </span>
                   </div>
                 </div>
-
+                
                 <div className="pl-11">
-                  <ul className="space-y-1 text-sm text-gray-600">
+                  <ul className="space-y-3">
                     {day.tasks.map((task, index) => (
-                      <li key={index} className="flex items-center">
-                        <span className={`w-4 h-4 rounded-full mr-2 ${
-                          task.completed ? 'bg-green-500' : 'bg-gray-300'
-                        }`}></span>
-                        {task.title}
-                        <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
-                          task.type === 'Lesson' ? 'bg-blue-100 text-blue-800' :
-                          task.type === 'MCQ' ? 'bg-purple-100 text-purple-800' :
-                          task.type === 'Interview' ? 'bg-amber-100 text-amber-800' :
-                          'bg-green-100 text-green-800'
-                        }`}>
-                          {task.type}
-                        </span>
+                      <li key={index} className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center">
+                            <span className={`px-2 py-0.5 text-xs rounded-full mr-2 ${
+                              task.type === 'lesson' ? 'bg-blue-100 text-blue-800' :
+                              task.type === 'mcq' ? 'bg-purple-100 text-purple-800' :
+                              task.type === 'technical-interview' ? 'bg-amber-100 text-amber-800' :
+                              task.type === 'behavioral-interview' ? 'bg-pink-100 text-pink-800' :
+                              task.type === 'system-design' ? 'bg-indigo-100 text-indigo-800' :
+                              task.type === 'whiteboard-interview' ? 'bg-red-100 text-red-800' :
+                              task.type === 'case-study' ? 'bg-green-100 text-green-800' :
+                              task.type === 'mock-interview' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {task.type.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                            </span>
+                            <span className="font-medium text-gray-800">{task.subtopic}</span>
+                          </div>
+                          <span className="text-sm text-gray-600 flex items-center">
+                            <Clock className="h-3 w-3 mr-1 text-gray-400" />
+                            {task.duration}
+                          </span>
+                        </div>
                       </li>
                     ))}
                   </ul>
