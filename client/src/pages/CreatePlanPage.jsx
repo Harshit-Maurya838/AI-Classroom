@@ -15,6 +15,7 @@ const CreatePlanPage = () => {
   const [duration, setDuration] = useState(30);
   const [lockedAmount, setLockedAmount] = useState(1000);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState(null);
 
   const { createPlan } = usePlan();
   const navigate = useNavigate();
@@ -31,10 +32,35 @@ const CreatePlanPage = () => {
     setStep(step - 1);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsGenerating(true);
+    setError(null);
 
-    setTimeout(() => {
+    // Prepare the data to send
+    const planData = {
+      topics: topicLevelPairs,
+      timePerDay: timePerDay,
+      duration: duration,
+      lockedAmount: lockedAmount,
+      createdAt: new Date().toISOString()
+    };
+
+    try {
+      const response = await fetch('/mockserver/createPlan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(planData)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Plan created successfully:', result);
+
       // Pass the first topic for backward compatibility 
       createPlan(
         topicLevelPairs[0].topic, 
@@ -43,9 +69,14 @@ const CreatePlanPage = () => {
         duration, 
         lockedAmount
       );
+      
       setIsGenerating(false);
       navigate('/dashboard');
-    }, 2000);
+    } catch (err) {
+      console.error('Error creating plan:', err);
+      setError('Failed to create plan. Please try again.');
+      setIsGenerating(false);
+    }
   };
 
   // Handle topic change
@@ -115,6 +146,13 @@ const CreatePlanPage = () => {
             </div>
           ))}
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-800 text-sm">{error}</p>
+          </div>
+        )}
 
         <div className="bg-white rounded-lg shadow-sm p-6">
           {/* Step 1 */}
@@ -321,7 +359,7 @@ const CreatePlanPage = () => {
               <button
                 onClick={handleSubmit}
                 disabled={isGenerating}
-                className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+                className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isGenerating ? 'Generating Plan...' : 'Create Plan'}
               </button>
