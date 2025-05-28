@@ -1,0 +1,12 @@
+{
+  "plans": [
+    {
+      "id": "9a42",
+      "topic": "JavaScript",
+      "level": "Advanced",
+      "timePerDay": 60,
+      "duration": 30,
+      "lockedAmount": 1000
+    }
+  ]
+}
