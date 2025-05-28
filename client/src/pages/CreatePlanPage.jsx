@@ -33,9 +33,8 @@ const CreatePlanPage = () => {
 
   const handleSubmit = () => {
     setIsGenerating(true);
-
+  
     setTimeout(() => {
-      // Pass the first topic for backward compatibility 
       createPlan(
         topicLevelPairs[0].topic, 
         topicLevelPairs[0].level, 
@@ -43,8 +42,33 @@ const CreatePlanPage = () => {
         duration, 
         lockedAmount
       );
-      setIsGenerating(false);
-      navigate('/dashboard');
+      const planData = {
+        topic: topicLevelPairs[0].topic,
+        level: topicLevelPairs[0].level,
+        timePerDay: timePerDay,
+        duration: duration,
+        lockedAmount: lockedAmount
+      };
+      const planDataJson = JSON.stringify(planData);
+  
+      // Send to mock server
+      fetch('http://localhost:3001/plans', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: planDataJson
+      })
+      .then(response => response.json())
+      .then(data => {
+        setIsGenerating(false);
+        navigate('/dashboard');
+      })
+      .catch(error => {
+        setIsGenerating(false);
+        // handle error (optional)
+        console.error('Error:', error);
+      });
     }, 2000);
   };
 
